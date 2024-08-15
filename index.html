@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'nonce-xyz123' https://jake160627.github.io/noticiaciones/;">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notificações de Navegador</title>
+    <style>
+        #notificationMessage {
+            display: none;
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        #settingsButton {
+            display: none;
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        #settingsButton:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <button id="notifyButton" nonce="xyz123">Solicitar Notificação</button>
+    <div id="notificationMessage"></div>
+    <button id="settingsButton" onclick="openSettings()">Clique aqui para ativar as notificações do navegador</button>
+
+    <script nonce="xyz123">
+        const button = document.querySelector("#notifyButton");
+        const notificationMessage = document.querySelector("#notificationMessage");
+        const settingsButton = document.querySelector("#settingsButton");
+
+        button.addEventListener("click", () => {
+            if (Notification.permission === 'denied') {
+                notificationMessage.textContent = 'As notificações estão bloqueadas. Para receber notificações, ative-as nas configurações do seu navegador.';
+                notificationMessage.style.display = 'block';
+                settingsButton.style.display = 'block';
+            } else if (Notification.permission !== 'granted') {
+                Notification.requestPermission().then(permission => {
+                    if (permission === 'granted') {
+                        const notification = new Notification('Notificações ativadas!', {
+                            body: `Mensagem aleatória: ${Math.random()}`,
+                            icon: '59a7cb1837fc91bbdbddfcd760b890c9.jpg', // Substitua pelo caminho real do ícone
+                            tag: 'Welcome Message',
+                        });
+
+                        notification.addEventListener('error', e => {
+                            alert('Erro ao exibir a notificação');
+                        });
+                        notificationMessage.style.display = 'none';
+                        settingsButton.style.display = 'none';
+                    } else {
+                        notificationMessage.textContent = 'Por favor, ative as notificações nas configurações do seu navegador.';
+                        notificationMessage.style.display = 'block';
+                        settingsButton.style.display = 'block';
+                    }
+                });
+            } else {
+                const notification = new Notification('Example notification', {
+                    body: `Mensagem aleatória: ${Math.random()}`,
+                    icon: '59a7cb1837fc91bbdbddfcd760b890c9.jpg', // Substitua pelo caminho real do ícone
+                    tag: 'Welcome Message',
+                });
+
+                notification.addEventListener('error', e => {
+                    alert('Erro ao exibir a notificação');
+                });
+                notificationMessage.style.display = 'none';
+                settingsButton.style.display = 'none';
+            }
+        });
+
+        function openSettings() {
+            const isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
+            const isFirefox = /Firefox/.test(navigator.userAgent);
+            const isEdge = /Edg/.test(navigator.userAgent);
+            const isSafari = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
+
+            if (isChrome) {
+                alert('Por favor, abra as configurações do navegador manualmente e vá para Privacidade e Segurança > Configurações de Conteúdo > Notificações.');
+            } else if (isFirefox) {
+                alert('Por favor, abra as configurações do navegador manualmente e vá para Privacidade e Segurança > Permissões > Notificações.');
+            } else if (isEdge) {
+                alert('Por favor, abra as configurações do navegador manualmente e vá para Privacidade, pesquisa e serviços > Permissões > Notificações.');
+            } else if (isSafari) {
+                alert('Por favor, abra as configurações do navegador manualmente e vá para Preferências > Websites > Notificações.');
+            } else {
+                alert('Não foi possível abrir as configurações de notificação diretamente. Por favor, abra as configurações do seu navegador manualmente.');
+            }
+        }
+
+        let notification;
+        let interval;
+
+        document.addEventListener("visibilitychange", () => {
+            if (document.visibilityState === "hidden") {
+                const leaveDate = new Date();
+                interval = setInterval(() => {
+                    notification = new Notification("Come back please", {
+                        body: `Você está ausente há ${Math.round((new Date() - leaveDate) / 1000)} segundos`,
+                        tag: "Come Back",
+                    });
+                }, 100);
+            } else {
+                if (interval) clearInterval(interval);
+                if (notification) notification.close();
+            }
+        });
+    </script>
+</body>
+</html>
